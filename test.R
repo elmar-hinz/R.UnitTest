@@ -38,13 +38,23 @@ test.listWithVector_vs_vectorAsList <- function() {
 
 test.split_behviour <- function() {
     df <- data.frame(numbers = 1:3, characters = c("a", "b", "a"))
-    sp <- split(df, df$characters)
-    # split returns a list
+    # groups the columns of the first parameters by the second
+    sp <- split(df$numbers, df$characters)
+    # returns a list
     checkIdentical("list", class(sp))
-    # a list of the original class
-    checkIdentical("data.frame", class(sp$a))
-    # list and dataframe are accessible be names in the same way
-    checkIdentical(as.integer(c(1,3)), sp$a$numbers)
+    # with elements of the class of the first parameter
+    checkIdentical(class(df$numbers), class(sp$a))
+}
+
+test.lapply_behaviour <- function() {
+    # a list of vectors of the same class
+    # this could be created by split
+    data <- list(1:10, 11:20, 21:30)
+    result <- lapply(data, mean)
+    # the result is list of the same length
+    checkTrue(is.list(result))
+    checkIdentical(length(data), length(result))
+    checkIdentical(as.list(c(5.5, 15.5, 25.5)), result)
 }
 
 test.tapply_behaviour <- function() {
