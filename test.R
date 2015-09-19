@@ -1,12 +1,12 @@
 
-test.simple_values_are_vecotrs <- function() {
+test.simple_values_are_vectors <- function() {
     checkTrue(is.vector(1))
     checkTrue(is.vector(1.1))
     checkTrue(is.vector(TRUE))
     checkTrue(is.vector("a"))
 }
 
-test.a_list_is_a_vecotr <- function() {
+test.a_list_is_a_vector <- function() {
     checkTrue(is.vector(list()))
 }
 
@@ -49,11 +49,14 @@ test.split_behviour <- function() {
 
 test.tapply_behaviour <- function() {
     df <- data.frame(numbers = c(1, 2, 3), characters = c("a", "b", "a"))
-    # without FUNction it returns the split vector
+    # without FUNction it returns the split vector (integer)
     checkIdentical(as.integer(c(1,2,1)),
-           tapply(X = df$numbers, INDEX = df$characters))
-    # with function it returns the result array
-    expectation <- array(c(4, 2), 2)
+       tapply(X = df$numbers, INDEX = df$characters))
+    # with function (sum) it returns the result as array (numeric)
+    # a: 1 + 3 = 4
+    # b: 2     = 2
+    # array of one dimension and length 2
+    expectation <- array(data = c(4, 2), dim = c(2))
     names(expectation) <- c("a", "b")
     checkIdentical(expectation,
        tapply(X = df$numbers, INDEX = df$characters, FUN = sum))
