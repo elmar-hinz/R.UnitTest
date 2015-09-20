@@ -42,7 +42,7 @@ test.split_behviour <- function() {
     sp <- split(df$numbers, df$characters)
     # returns a list
     checkIdentical("list", class(sp))
-    # with elements of the class of the first parameter
+    # with vectors of the class of the first parameter
     checkIdentical(class(df$numbers), class(sp$a))
 }
 
@@ -71,4 +71,22 @@ test.tapply_behaviour <- function() {
     checkIdentical(expectation,
        tapply(X = df$numbers, INDEX = df$characters, FUN = sum))
 }
+
+test.which_behaviour <- function() {
+    c <- c(NA, 1, 2)
+    # returns a list of positions as integer and skips NA
+    checkIdentical(as.integer(c(2,3)), which(c > 0))
+    # wants a logical vector, not missing NA
+    checkIdentical(2:3, which(c(F, T, T)))
+    checkIdentical(2:3, which(!is.na(c)))
+    checkException( which(c), silent = TRUE)
+    # NULL and 0 are not logical
+    checkException( which(c(NULL)), silent = TRUE)
+    checkException( which(c(0)), silent = TRUE)
+    # only NA is casted to logical FALSE
+    checkIdentical(2:3, which(c(NA, T, T, F)))
+}
+
+
+
 
