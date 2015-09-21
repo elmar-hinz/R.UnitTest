@@ -1,8 +1,22 @@
 
+test.the_classes <- function() {
+    checkIdentical("integer", class(1L))
+    checkIdentical("numeric", class(1))
+    checkIdentical("numeric", class(1.1))
+    checkIdentical("logical", class(TRUE))
+    checkIdentical("character", class("a"))
+    checkIdentical("list", class(list()))
+    checkIdentical("data.frame", class(data.frame()))
+}
+
 test.simple_values_are_vectors <- function() {
+    checkIdentical("numeric", class(1))
     checkTrue(is.vector(1))
+    checkIdentical("numeric", class(1.1))
     checkTrue(is.vector(1.1))
+    checkIdentical("logical", class(TRUE))
     checkTrue(is.vector(TRUE))
+    checkIdentical("character", class("a"))
     checkTrue(is.vector("a"))
 }
 
@@ -11,16 +25,39 @@ test.a_list_is_a_vector <- function() {
 }
 
 test.a_dataframe_is_not_a_vector <- function() {
+    checkTrue(is.vector(list()))
+    checkTrue(is.list(data.frame()))
     checkTrue(!is.vector(data.frame()))
 }
 
-test.digits_and_floats_are_numeric <- function() {
-    checkIdentical("numeric", class(3))
+test.integers_are_numeric <- function() {
+    checkTrue("integer" == class(1L))
+    checkTrue("numeric" != class(1L))
+    checkTrue(is.integer(1L))
+    checkTrue(is.numeric(1L))
 }
 
-test.sequences_are_integer <- function() {
-    checkIdentical("integer", class(1:3))
+test.digits_and_floats_are_numeric <- function() {
+    checkTrue(!is.integer(3))
+    checkTrue(is.numeric(3))
+    checkTrue(is.numeric(3.3))
+}
+
+test.by_default_seq_are_integers <- function() {
     checkIdentical(1:3, seq(1,3))
+    checkTrue(is.numeric(1:3))
+    checkTrue(is.integer(1:3))
+    checkIdentical("integer", class(1:3))
+}
+
+test.seq_by_are_numeric <- function() {
+    checkIdentical("integer", class(seq(1,3)))
+    checkIdentical("numeric", class(seq(1,3, by = 1)))
+    checkIdentical("numeric", class(seq(1,3, by = 1L)))
+}
+
+test.inter_function_fills_zeros <- function() {
+    checkIdentical(as.integer(c(0,0)), integer(2))
 }
 
 test.list_vs_vector <- function() {
@@ -86,7 +123,5 @@ test.which_behaviour <- function() {
     # only NA is casted to logical FALSE
     checkIdentical(2:3, which(c(NA, T, T, F)))
 }
-
-
 
 
