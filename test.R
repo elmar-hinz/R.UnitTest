@@ -43,6 +43,40 @@ test.digits_and_floats_are_numeric <- function() {
     checkTrue(is.numeric(3.3))
 }
 
+test.matrix_creation_and_behaviour <- function() {
+    # ingredients
+    mtrx <- 1:6
+    dimensions <- c(2, 3) # dims are integer but accept numeric
+    horizontal <- c("alpha", "beta", "gamma")
+    vertical <- c("one", "two")
+    dimension_names <- list(vertical, horizontal)
+    # before
+    checkTrue(is.null(dim(mtrx)))
+    checkTrue(is.null(dimnames(mtrx)))
+    checkIdentical('integer', class(mtrx))
+    #after
+    dim(mtrx) <- dimensions
+    dimnames(mtrx) <- dimension_names
+    checkIdentical('matrix', class(mtrx))
+    checkTrue(is.array(mtrx))
+    checkIdentical("integer", class(dim(mtrx)))
+    checkIdentical(as.integer(dimensions), dim(mtrx))
+    checkIdentical(dimension_names, dimnames(mtrx))
+    # accessing data
+    checkIdentical(4L, mtrx[4])
+    checkIdentical(4L, mtrx['two', 'beta'])
+    checkIdentical(vertical, names(mtrx[,'beta']))
+    checkIdentical(3:4, as.integer(mtrx[,'beta']))
+    # to dataframe
+    df <- as.data.frame(mtrx)
+    checkTrue(is.null(names(mtrx)))
+    checkIdentical(horizontal, names(df))
+    checkIdentical(horizontal, colnames(df))
+    checkIdentical(vertical, rownames(df))
+    checkIdentical(4L, df['two', 'beta'])
+    checkIdentical(3:4, df$beta)
+}
+
 test.by_default_seq_are_integers <- function() {
     checkIdentical(1:3, seq(1,3))
     checkTrue(is.numeric(1:3))
@@ -139,6 +173,15 @@ test.tapply_behaviour <- function() {
     checkIdentical(splitv, tapply(df$numbers, df$characters))
     checkIdentical(expect,
        tapply(X = df$numbers, INDEX = df$characters, FUN = sum))
+}
+
+test.multidimensional_tapply <- function() {
+    # resulting in a two dimensional matrix, a special array
+    sp <- tapply(c(1,2,3,4), list(c(1,1,2,2), c("a", "a", "a", "b")), sum)
+    checkEquals("matrix", class(sp))
+    checkIdentical(list(c("1", "2"), c("a", "b")), dimnames(sp))
+    checkTrue(is.na(sp["1", "b"]))
+    checkIdentical(4, sp["2", "b"])
 }
 
 test.mapply_behaviour <- function() {
