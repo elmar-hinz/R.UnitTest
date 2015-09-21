@@ -61,10 +61,12 @@ test.inter_function_fills_zeros <- function() {
 }
 
 test.list_vs_vector <- function() {
+    # the vector concatenates
     v <- c(1:2, 3:4)
     l <- list(1:2, 3:4)
-    # the vector concatenates
     checkIdentical(v[4], l[[2]][2])
+    checkTrue( identical(   c(c(1,2)),    c(1,2)))
+    checkTrue(!identical(list(c(1,2)), list(1,2)))
 }
 
 test.listWithVector_vs_vectorAsList <- function() {
@@ -84,7 +86,7 @@ test.split_behviour <- function() {
 }
 
 test.lapply_behaviour <- function() {
-    # a list of vectors of the same class
+    # a list of objects
     # this could be created by split
     data <- list(1:10, 11:20, 21:30)
     result <- lapply(data, mean)
@@ -92,6 +94,11 @@ test.lapply_behaviour <- function() {
     checkTrue(is.list(result))
     checkIdentical(length(data), length(result))
     checkIdentical(as.list(c(5.5, 15.5, 25.5)), result)
+}
+
+test.lapply_with_differnt_classes <- function() {
+    result <- lapply(list("a", 1:2), class)
+    checkIdentical(list("character", "integer"), result)
 }
 
 test.tapply_behaviour <- function() {
@@ -109,6 +116,13 @@ test.tapply_behaviour <- function() {
        tapply(X = df$numbers, INDEX = df$characters, FUN = sum))
 }
 
+test.mapply_behaviour <- function() {
+    # all parameters have the same length
+    # walks them along in parallel and feeds them to FUN
+    checkIdentical(as.integer(c(9, 12)), mapply(sum, 1:2, 3:4, 5:6))
+    checkIdentical(mapply(sum, 1:2, 3:4), mapply(1:2, 3:4, FUN = sum))
+}
+
 test.which_behaviour <- function() {
     c <- c(NA, 1, 2)
     # returns a list of positions as integer and skips NA
@@ -124,4 +138,15 @@ test.which_behaviour <- function() {
     checkIdentical(2:3, which(c(NA, T, T, F)))
 }
 
+test.sum_behaviour <- function() {
+    # sum coerces as few as possible and as much as necessary
+    checkTrue("integer" == class(sum(1L)))
+    checkTrue("numeric" == class(sum(1)))
+    checkTrue("numeric" == class(sum(1, 1L)))
+    # sums to a vector of lenght 1
+    checkTrue(1 == length(sum(1:2, 3:5, 2L)))
+    checkTrue(4 == sum(1:2, 1L))
+    # accepts negative values
+    checkTrue(0 == sum(-1, 2, -1))
+}
 
