@@ -77,14 +77,26 @@ test.listWithVector_vs_vectorAsList <- function() {
 
 test.split_behviour <- function() {
     df <- data.frame(numbers = 1:3, characters = c("a", "b", "a"))
-    # groups the columns of the first parameters by the second
+    # groups the column of the first parameters by the second
     sp <- split(df$numbers, df$characters)
     # returns a list
-    checkIdentical("list", class(sp))
+    checkIdentical(list("a" = c(1L,3L), "b" = 2L), sp)
     # with vectors of the class of the first parameter
     checkIdentical(class(df$numbers), class(sp$a))
 }
 
+test.multidimensional_split <- function() {
+    sp <- split(c(1,2,3,4), list(c(1,1,2,2), c("a", "a", "a", "b")))
+    # the dimensions go into the names
+    checkIdentical(c('1.a', '2.a', '1.b', '2.b'), names(sp))
+    checkIdentical(sp$'1.a', c(1,2))
+    # empty names are created
+    checkIdentical(sp$'1.b', numeric(0))
+}
+
+## List apply
+##
+## Applies a function on a list of objects.
 test.lapply_behaviour <- function() {
     # a list of objects
     # this could be created by split
@@ -94,25 +106,38 @@ test.lapply_behaviour <- function() {
     checkTrue(is.list(result))
     checkIdentical(length(data), length(result))
     checkIdentical(as.list(c(5.5, 15.5, 25.5)), result)
-}
-
-test.lapply_with_differnt_classes <- function() {
+    # wight different classes
     result <- lapply(list("a", 1:2), class)
     checkIdentical(list("character", "integer"), result)
 }
 
+## SubseT apply (Table apply)
+##
+## Creates subsets by factors or alike
+## and applies a function on each subset.
+## This is much like combining split() and lapply().
 test.tapply_behaviour <- function() {
-    df <- data.frame(numbers = c(1, 2, 3), characters = c("a", "b", "a"))
-    # without FUNction it returns the split vector (integer)
-    checkIdentical(as.integer(c(1,2,1)),
-       tapply(X = df$numbers, INDEX = df$characters))
-    # with function (sum) it returns the result as array (numeric)
+    # expectations for sum of c(1, 2, 3) by  c("a", "b", "a")
+    # subset split vector:
+    splitv <- as.integer(c(1,2,1))
+    # result array
     # a: 1 + 3 = 4
     # b: 2     = 2
-    # array of one dimension and length 2
-    expectation <- array(data = c(4, 2), dim = c(2))
-    names(expectation) <- c("a", "b")
-    checkIdentical(expectation,
+    # of one dimension and length 2:
+    wanted <- as.integer(c(4, 2))
+    expect <- array(data = wanted, dim = c(2))
+    names(expect) <- c("a", "b")
+    checkIdentical(wanted, as.vector(expect))
+
+    # without FUN it returns the split vector (integer)
+    checkIdentical(splitv, tapply(1:3, c('a','b','a')))
+    # with function (sum) it returns the result as array
+    checkIdentical(expect, tapply(1:3, c('a','b','a'), FUN = sum))
+
+    # same based on a dataframe
+    df <- data.frame(numbers = 1:3, characters = c("a", "b", "a"))
+    checkIdentical(splitv, tapply(df$numbers, df$characters))
+    checkIdentical(expect,
        tapply(X = df$numbers, INDEX = df$characters, FUN = sum))
 }
 
