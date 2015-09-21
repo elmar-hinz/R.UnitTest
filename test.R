@@ -121,6 +121,11 @@ test.mapply_behaviour <- function() {
     # walks them along in parallel and feeds them to FUN
     checkIdentical(as.integer(c(9, 12)), mapply(sum, 1:2, 3:4, 5:6))
     checkIdentical(mapply(sum, 1:2, 3:4), mapply(1:2, 3:4, FUN = sum))
+    # if paramters don't have the same length
+    # they are expanded by repetion
+    checkIdentical(mapply(sum, 1:3, c(2,2,2)), mapply(sum, 1:3, 2))
+    suppressWarnings( checkIdentical(mapply(sum, 1:3, c(1,2,1)),
+        mapply(sum, 1:3, c(1,2))))
 }
 
 test.which_behaviour <- function() {
