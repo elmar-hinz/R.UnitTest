@@ -177,7 +177,6 @@ test.sum_behaviour <- function() {
 # Iterators and friends
 ######################################################################
 
-
 test.match_behavier <-function() {
     needle <- c('h', 'y', 'e')
     heap <- c('e', 'h', 'x', 'e')
@@ -294,5 +293,40 @@ test.which_behaviour <- function() {
     checkException( which(c(0)), silent = TRUE)
     # only NA is casted to logical FALSE
     checkIdentical(2:3, which(c(NA, T, T, F)))
+}
+
+######################################################################
+# Howto data.frames
+######################################################################
+
+test.howto_add_columns <- function() {
+    df <- iris
+    df$Sepal.Length.Copy <- df$Sepal.Length
+    checkIdentical("Sepal.Length.Copy", names(df)[6] )
+}
+
+test.howto_rename_columns <- function() {
+    library(plyr)
+    df <- iris
+    checkIdentical("Sepal.Length", names(iris)[1] )
+    df <- rename(df, c("Sepal.Width" = "SW", "Sepal.Length" = "SL"))
+    checkIdentical("SL", names(df)[1] )
+    checkIdentical("SW", names(df)[2] )
+}
+
+test.howto_alter_columns <- function() {
+    df <- iris
+    checkTrue(identical(iris$Sepal.Length, df$Sepal.Length))
+    df$Sepal.Length <- round(df$Sepal.Length)
+    checkTrue(!identical(iris$Sepal.Length, df$Sepal.Length))
+}
+
+test.howto_remove_columns <- function() {
+    df <- iris
+    before <- c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width", "Species")
+    after <- c("Sepal.Length", "Sepal.Width", "Species")
+    checkIdentical(before, names(df))
+    df <- df[,-(3:4)]
+    checkIdentical(after, names(df))
 }
 
