@@ -78,18 +78,22 @@ test.listWithVector_vs_vectorAsList <- function() {
 
 test.matrix_creation_and_behaviour <- function() {
     # ingredients
-    mtrx <- 1:6
-    dimensions <- c(2, 3) # dims are integer but accept numeric
+    dat <- 1:6
+    rows <- 2
+    cols <- 3
+    dimensions <- c(rows, cols) # dims are integer but accept numeric
     horizontal <- c("alpha", "beta", "gamma")
     vertical <- c("one", "two")
     dimension_names <- list(vertical, horizontal)
     # before
+    mtrx <- dat
     checkTrue(is.null(dim(mtrx)))
     checkTrue(is.null(dimnames(mtrx)))
     checkIdentical('integer', class(mtrx))
-    #after
+    # creation  by adding dimensions
     dim(mtrx) <- dimensions
     dimnames(mtrx) <- dimension_names
+    #after
     checkIdentical('matrix', class(mtrx))
     checkTrue(is.array(mtrx))
     checkIdentical("integer", class(dim(mtrx)))
@@ -100,6 +104,10 @@ test.matrix_creation_and_behaviour <- function() {
     checkIdentical(4L, mtrx['two', 'beta'])
     checkIdentical(vertical, names(mtrx[,'beta']))
     checkIdentical(3:4, as.integer(mtrx[,'beta']))
+    # creation by matrix function
+    mtrx2 <- matrix( data = dat, nrow = rows, ncol = cols,
+        dimnames = dimension_names)
+    checkIdentical(mtrx, mtrx2)
     # to dataframe
     df <- as.data.frame(mtrx)
     checkTrue(is.null(names(mtrx)))
@@ -108,13 +116,45 @@ test.matrix_creation_and_behaviour <- function() {
     checkIdentical(vertical, rownames(df))
     checkIdentical(4L, df['two', 'beta'])
     checkIdentical(3:4, df$beta)
+    # roundtripping
+    checkIdentical(mtrx, as.matrix(df))
 }
-
 
 test.a_dataframe_is_not_a_vector <- function() {
     checkTrue(is.vector(list()))
     checkTrue(is.list(data.frame()))
     checkTrue(!is.vector(data.frame()))
+}
+
+test.dataframe_behaviour_and_access <- function() {
+    col1 <- 1:3; col2 <- c('one', 'two', 'three')
+    rows <- 3; cols <- 2
+    vertical <- c("one", "two", "three")
+    dimensions <- c(rows, cols)
+    dimension_names <- list(vertical, horizontal)
+    # default creation
+    df <- data.frame(numbers = col1, names = col2)
+    checkTrue(is.data.frame(df))
+    checkIdentical(c("numbers", "names"), colnames(df))
+    checkIdentical(as.character(1:3), rownames(df))
+    # strings become factors with default creation
+    checkTrue("factor" != class(df$numbers))
+    checkTrue("factor" ==  class(df$names))
+    # rownames and no factors
+    df <- data.frame(numbers = col1, names = col2,
+        row.names = vertical, stringsAsFactors = FALSE)
+    checkIdentical(vertical, rownames(df))
+    checkTrue("factor" !=  class(df$names))
+    # accessing data
+    checkIdentical(df$numbers, df[,'numbers'])
+    checkIdentical(df$numbers, df[,1])
+    checkIdentical(2:3, df$numbers[2:3])
+    # rows and multicols are of type data.frame
+    checkTrue(is.data.frame(df[1,]))
+    checkTrue(is.data.frame(df[,1:2]))
+    # single cols
+    checkTrue(is.integer(df[,1]))
+    checkTrue(is.character(df[,2]))
 }
 
 ######################################################################
