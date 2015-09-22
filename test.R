@@ -302,16 +302,15 @@ test.which_behaviour <- function() {
 test.howto_add_columns <- function() {
     df <- iris
     df$Sepal.Length.Copy <- df$Sepal.Length
-    checkIdentical("Sepal.Length.Copy", names(df)[6] )
+    checkIdentical("Sepal.Length.Copy", tail(names(df), n=1) )
+    checkIdentical(df$Sepal.Length, df$Sepal.Length.Copy)
 }
 
 test.howto_rename_columns <- function() {
-    library(plyr)
     df <- iris
-    checkIdentical("Sepal.Length", names(iris)[1] )
-    df <- rename(df, c("Sepal.Width" = "SW", "Sepal.Length" = "SL"))
-    checkIdentical("SL", names(df)[1] )
-    checkIdentical("SW", names(df)[2] )
+    index <- match(c("Sepal.Length", "Sepal.Width"), names(df))
+    names(df)[index] <- c("SL", "SW")
+    checkIdentical(c("SL", "SW"), names(df)[1:2] )
 }
 
 test.howto_alter_columns <- function() {
