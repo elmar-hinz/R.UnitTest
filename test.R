@@ -1,3 +1,6 @@
+######################################################################
+# Basic data types
+######################################################################
 
 test.the_classes <- function() {
     checkIdentical("integer", class(1L))
@@ -24,12 +27,6 @@ test.a_list_is_a_vector <- function() {
     checkTrue(is.vector(list()))
 }
 
-test.a_dataframe_is_not_a_vector <- function() {
-    checkTrue(is.vector(list()))
-    checkTrue(is.list(data.frame()))
-    checkTrue(!is.vector(data.frame()))
-}
-
 test.integers_are_numeric <- function() {
     checkTrue("integer" == class(1L))
     checkTrue("numeric" != class(1L))
@@ -42,6 +39,42 @@ test.digits_and_floats_are_numeric <- function() {
     checkTrue(is.numeric(3))
     checkTrue(is.numeric(3.3))
 }
+
+test.by_default_seq_are_integers <- function() {
+    checkIdentical(1:3, seq(1,3))
+    checkTrue(is.numeric(1:3))
+    checkTrue(is.integer(1:3))
+    checkIdentical("integer", class(1:3))
+}
+
+test.seq_by_are_numeric <- function() {
+    checkIdentical("integer", class(seq(1,3)))
+    checkIdentical("numeric", class(seq(1,3, by = 1)))
+    checkIdentical("numeric", class(seq(1,3, by = 1L)))
+}
+
+test.inter_function_fills_zeros <- function() {
+    checkIdentical(as.integer(c(0,0)), integer(2))
+}
+
+test.list_vs_vector <- function() {
+    # the vector concatenates
+    v <- c(1:2, 3:4)
+    l <- list(1:2, 3:4)
+    checkIdentical(v[4], l[[2]][2])
+    checkTrue( identical(   c(c(1,2)),    c(1,2)))
+    checkTrue(!identical(list(c(1,2)), list(1,2)))
+}
+
+test.listWithVector_vs_vectorAsList <- function() {
+    v <- c("a", "b")
+    checkIdentical("b",    list(v)[[1]][2]) # one vector  of lenght 2
+    checkIdentical("b", as.list(v)[[2]][1]) # two vectors of length 1
+}
+
+######################################################################
+# Advanced data types
+######################################################################
 
 test.matrix_creation_and_behaviour <- function() {
     # ingredients
@@ -77,37 +110,32 @@ test.matrix_creation_and_behaviour <- function() {
     checkIdentical(3:4, df$beta)
 }
 
-test.by_default_seq_are_integers <- function() {
-    checkIdentical(1:3, seq(1,3))
-    checkTrue(is.numeric(1:3))
-    checkTrue(is.integer(1:3))
-    checkIdentical("integer", class(1:3))
+
+test.a_dataframe_is_not_a_vector <- function() {
+    checkTrue(is.vector(list()))
+    checkTrue(is.list(data.frame()))
+    checkTrue(!is.vector(data.frame()))
 }
 
-test.seq_by_are_numeric <- function() {
-    checkIdentical("integer", class(seq(1,3)))
-    checkIdentical("numeric", class(seq(1,3, by = 1)))
-    checkIdentical("numeric", class(seq(1,3, by = 1L)))
+######################################################################
+# Basic functions
+######################################################################
+
+test.sum_behaviour <- function() {
+    # sum coerces as few as possible and as much as necessary
+    checkTrue("integer" == class(sum(1L)))
+    checkTrue("numeric" == class(sum(1)))
+    checkTrue("numeric" == class(sum(1, 1L)))
+    # sums to a vector of lenght 1
+    checkTrue(1 == length(sum(1:2, 3:5, 2L)))
+    checkTrue(4 == sum(1:2, 1L))
+    # accepts negative values
+    checkTrue(0 == sum(-1, 2, -1))
 }
 
-test.inter_function_fills_zeros <- function() {
-    checkIdentical(as.integer(c(0,0)), integer(2))
-}
-
-test.list_vs_vector <- function() {
-    # the vector concatenates
-    v <- c(1:2, 3:4)
-    l <- list(1:2, 3:4)
-    checkIdentical(v[4], l[[2]][2])
-    checkTrue( identical(   c(c(1,2)),    c(1,2)))
-    checkTrue(!identical(list(c(1,2)), list(1,2)))
-}
-
-test.listWithVector_vs_vectorAsList <- function() {
-    v <- c("a", "b")
-    checkIdentical("b",    list(v)[[1]][2]) # one vector  of lenght 2
-    checkIdentical("b", as.list(v)[[2]][1]) # two vectors of length 1
-}
+######################################################################
+# Iterators and friends
+######################################################################
 
 test.split_behviour <- function() {
     df <- data.frame(numbers = 1:3, characters = c("a", "b", "a"))
@@ -209,17 +237,5 @@ test.which_behaviour <- function() {
     checkException( which(c(0)), silent = TRUE)
     # only NA is casted to logical FALSE
     checkIdentical(2:3, which(c(NA, T, T, F)))
-}
-
-test.sum_behaviour <- function() {
-    # sum coerces as few as possible and as much as necessary
-    checkTrue("integer" == class(sum(1L)))
-    checkTrue("numeric" == class(sum(1)))
-    checkTrue("numeric" == class(sum(1, 1L)))
-    # sums to a vector of lenght 1
-    checkTrue(1 == length(sum(1:2, 3:5, 2L)))
-    checkTrue(4 == sum(1:2, 1L))
-    # accepts negative values
-    checkTrue(0 == sum(-1, 2, -1))
 }
 
