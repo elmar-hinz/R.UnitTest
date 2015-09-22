@@ -177,7 +177,24 @@ test.sum_behaviour <- function() {
 # Iterators and friends
 ######################################################################
 
-test.split_behviour <- function() {
+
+test.match_behavier <-function() {
+    needle <- c('h', 'y', 'e')
+    heap <- c('e', 'h', 'x', 'e')
+    # positions of the first match, NA for none
+    checkIdentical(c(2L, NA, 1L), match(needle, heap))
+    checkIdentical(c(T,F,T), !is.na(match(needle, heap)))
+}
+
+test.in_behaviour <-function() {
+    needle <- c('h', 'y', 'e')
+    heap <- c('e', 'h', 'x', 'e')
+    expect <- c(T, F, T)
+    checkIdentical(expect, needle %in% heap)
+    checkIdentical(!is.na(match(needle, heap)), needle %in% heap)
+}
+
+test.split_behaviour <- function() {
     df <- data.frame(numbers = 1:3, characters = c("a", "b", "a"))
     # groups the column of the first parameters by the second
     sp <- split(df$numbers, df$characters)
