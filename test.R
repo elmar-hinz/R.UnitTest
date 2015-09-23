@@ -296,6 +296,30 @@ test.which_behaviour <- function() {
 }
 
 ######################################################################
+# Howto basics
+######################################################################
+
+test.howto_append_to_vector <- function() {
+    vec <- c('a')
+    vec <- c(vec, 'b')
+    checkIdentical(c('a', 'b'), vec)
+}
+
+test.howto_append_to_list <- function() {
+    li <- list('a')
+    li[length(li) + 1] <- 3
+    li[[length(li) + 1]] <- c(1, 2)
+    checkIdentical(list(c('a'), c(3), c(1, 2)), li)
+}
+
+test.howto_do_for_loops_with_lists_and_vectors <- function() {
+    vec <- 1:3
+    for(element in vec) checkIdentical('integer', class(element))
+    # behaves the same for lists
+    for(element in as.list(vec)) checkIdentical('integer', class(element))
+}
+
+######################################################################
 # Howto data.frames
 ######################################################################
 
